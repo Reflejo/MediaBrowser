@@ -6,7 +6,8 @@
 //  Copyright © 2019 Seungyoun Yi. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
 extension MediaBrowser {
     /**
      setCurrentIndex to show first.

@@ -31,6 +31,7 @@ extension MediaBrowser: UIScrollViewDelegate {
         
         if currentPageIndex != previousCurrentPage {
             didStartViewingPageAtIndex(index: index)
+            clearCurrentVideo()
         }
     }
     

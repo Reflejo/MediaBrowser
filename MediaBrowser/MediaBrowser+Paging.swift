@@ -245,11 +245,6 @@ extension MediaBrowser {
             return
         }
         
-        // Handle video on page change
-        if !rotating || index != currentVideoIndex {
-            clearCurrentVideo()
-        }
-        
         // Release images further away than +/-1
         if index > 0 {
             // Release anything < index - 1

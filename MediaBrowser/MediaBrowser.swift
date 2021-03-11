@@ -102,9 +102,6 @@ func floorcgf(x: CGFloat) -> CGFloat {
     /// UIToolBar Tint Background for MediaBrowser
     public var toolbarBackgroundColor = UIColor.black
     
-    /// MediaBrowser has belonged to viewcontroller
-    public var hasBelongedToViewController = false
-    
     /// Check viewcontroller based status bar apperance
     public var isVCBasedStatusBarAppearance = false
     
@@ -586,7 +583,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
         
         if hideToolbar {
             toolbar.removeFromSuperview()
-        } else {
+        } else if toolbar.superview == nil {
             view.addSubview(toolbar)
         }
         
@@ -690,6 +687,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
         }
         
         viewHasAppearedInitially = true
+        clearCurrentVideo()
     }
 
     /**
@@ -742,10 +740,6 @@ func floorcgf(x: CGFloat) -> CGFloat {
      - Parameter parent: UIViewController
      */
     open override func willMove(toParent parent: UIViewController?) {
-        if parent != nil && hasBelongedToViewController {
-            fatalError("MediaBrowser Instance Reuse")
-        }
-
         if let navBar = navigationController?.navigationBar, didSavePreviousStateOfNavBar, parent == nil {
             navBar.titleTextAttributes = [NSAttributedString.Key.foregroundColor:previousNavigationBarTextColor ?? UIColor.black]
             navBar.backgroundColor = previousNavigationBarBackgroundColor
@@ -756,18 +750,6 @@ func floorcgf(x: CGFloat) -> CGFloat {
         }
     }
     
-    /**
-     did move toParentViewController
-     
-     - Parameter parent: UIViewController
-     */
-    open override func didMove(toParent parent: UIViewController?) {
-        if nil == parent {
-            hasBelongedToViewController = true
-        }
-
-    }
-
     //MARK: - Nav Bar Appearance
     func setNavBarAppearance(animated: Bool) {
         navigationController?.setNavigationBarHidden(false, animated: animated)
@@ -907,9 +889,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
         mediaArray.removeAll()
         thumbMedias.removeAll()
         
-        if mediaNum < 1 { return }
-        
-        for _ in 0...(mediaNum - 1) {
+        for _ in 0..<mediaNum {
             mediaArray.append(nil)
             thumbMedias.append(nil)
         }
@@ -930,6 +910,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
             performLayout()
             view.setNeedsLayout()
         }
+        self.gridController?.collectionView?.reloadData()
     }
 
     var numberOfMedias: Int {
@@ -1361,16 +1342,16 @@ func floorcgf(x: CGFloat) -> CGFloat {
     
     func playVideo(videoURL: URL, atPhotoIndex index: Int) {
         // Setup player
-        
+        var headers: [String: String] = [:]
         if let accessToken = delegate?.accessToken(for: videoURL) {
-            let headerFields: [String: String] = ["Authorization": accessToken]
-            let urlAsset = AVURLAsset(url: videoURL, options: ["AVURLAssetHTTPHeaderFieldsKey": headerFields])
-            let playerItem = AVPlayerItem(asset: urlAsset)
-            currentVideoPlayerViewController.player = AVPlayer(playerItem: playerItem)
-        } else {
-            currentVideoPlayerViewController.player = AVPlayer(url: videoURL)
+            headers = ["Authorization": accessToken]
+        } else if let cookies = HTTPCookieStorage.shared.cookies(for: videoURL) {
+            headers = HTTPCookie.requestHeaderFields(with: cookies)
         }
         
+        let urlAsset = AVURLAsset(url: videoURL, options: ["AVURLAssetHTTPHeaderFieldsKey": headers])
+        currentVideoPlayerViewController.player = AVPlayer(playerItem: AVPlayerItem(asset: urlAsset))
+
         if #available(iOS 9.0, *) {
             currentVideoPlayerViewController.allowsPictureInPicturePlayback = false
         } else {

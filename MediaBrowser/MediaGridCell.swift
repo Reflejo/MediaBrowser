@@ -42,8 +42,8 @@ class MediaGridCell: UICollectionViewCell {
         videoIndicator.isHidden = false
         let videoIndicatorImage = UIImage.imageForResourcePath(
             name: "VideoOverlay",
-            inBundle: Bundle(for: MediaGridCell.self))!
-        
+            inBundle: Bundle.module)!
+
         videoIndicator.frame = CGRect(
             x: self.bounds.size.width - videoIndicatorImage.size.width - videoIndicatorPadding,
             y: self.bounds.size.height - videoIndicatorImage.size.height - videoIndicatorPadding,
@@ -62,12 +62,12 @@ class MediaGridCell: UICollectionViewCell {
         selectedButton.setImage(
             UIImage.imageForResourcePath(
                 name: "ImageSelectedSmallOff",
-                inBundle: Bundle(for: MediaGridCell.self)),
+                inBundle: Bundle.module),
             for: .normal)
         
         selectedButton.setImage(UIImage.imageForResourcePath(
             name: "ImageSelectedSmallOn",
-            inBundle: Bundle(for: MediaGridCell.self)),
+            inBundle: Bundle.module),
                                 for: .selected)
         
         selectedButton.addTarget(self, action: #selector(MediaGridCell.selectionButtonPressed), for: .touchDown)
@@ -113,13 +113,13 @@ class MediaGridCell: UICollectionViewCell {
                     if let selectedOffImage = browser.mediaSelectedGridOffIcon {
                         selectedButton.setImage(selectedOffImage, for: .normal)
                     } else {
-                        selectedButton.setImage(UIImage(named: "ImageSelectedSmallOff", in: Bundle(for: MediaBrowser.self), compatibleWith: nil), for: .normal)
+                        selectedButton.setImage(UIImage(named: "ImageSelectedSmallOff", in: Bundle.module, compatibleWith: nil), for: .normal)
                     }
                     
                     if let selectedOnImage = browser.mediaSelectedGridOnIcon {
                         selectedButton.setImage(selectedOnImage, for: .selected)
                     } else {
-                        selectedButton.setImage(UIImage(named: "ImageSelectedSmallOn", in: Bundle(for: MediaBrowser.self), compatibleWith: nil), for: .selected)
+                        selectedButton.setImage(UIImage(named: "ImageSelectedSmallOn", in: Bundle.module, compatibleWith: nil), for: .selected)
                     }
 
                     loadingIndicator.style = .ontop
@@ -267,8 +267,8 @@ class MediaGridCell: UICollectionViewCell {
                 let error = UIImageView()
                 error.image = UIImage.imageForResourcePath(
                     name: "ImageError",
-                    inBundle: Bundle(for: MediaGridCell.self))
-                
+                    inBundle: Bundle.module)
+
                 error.isUserInteractionEnabled = false
                 error.sizeToFit()
                 

@@ -394,12 +394,12 @@ func floorcgf(x: CGFloat) -> CGFloat {
             
             let previousButtonImage = UIImage.imageForResourcePath(
                 name: arrowPathFormat + "Left",
-                inBundle: Bundle(for: MediaBrowser.self))
-            
+                inBundle: Bundle.module)
+
             let nextButtonImage = UIImage.imageForResourcePath(
                 name: arrowPathFormat + "Right",
-                inBundle: Bundle(for: MediaBrowser.self))
-            
+                inBundle: Bundle.module)
+
             previousButton = UIBarButtonItem(
                 image: previousButtonImage,
                 style: UIBarButtonItem.Style.plain,
@@ -538,7 +538,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
             hasItems = true
             
             items.append(UIBarButtonItem(
-                image: UIImage.imageForResourcePath(name: "UIBarButtonItemGrid", inBundle: Bundle(for: MediaBrowser.self)),
+                image: UIImage.imageForResourcePath(name: "UIBarButtonItemGrid", inBundle: Bundle.module),
                 style: .plain,
                 target: self,
                 action: #selector(MediaBrowser.showGridAnimated)))

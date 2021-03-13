@@ -10,6 +10,7 @@ import UIKit
 import AVKit
 import QuartzCore
 import SDWebImage
+import Photos
 
 func floorcgf(x: CGFloat) -> CGFloat {
     return CGFloat(floorf(Float(x)))
@@ -1243,7 +1244,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
         if let ab = actionButton {
             let photo = mediaAtIndex(index: currentPageIndex)
             
-            if photo != nil && (photo!.underlyingImage == nil || photo!.isVideo) {
+            if photo != nil && (photo!.underlyingImage == nil && !photo!.isVideo) {
                 ab.isEnabled = false
                 ab.tintColor = UIColor.clear // Tint to hide button
             } else {
@@ -1340,6 +1341,54 @@ func floorcgf(x: CGFloat) -> CGFloat {
         }
     }
     
+    func downloadVideoLinkAndCreateAsset(_ videoURL: URL, index: Int) {
+        guard let documentsDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+
+        // check if the file already exist at the destination folder if you don't want to download it twice
+        if !FileManager.default.fileExists(atPath: documentsDirectoryURL.appendingPathComponent(videoURL.lastPathComponent).path) {
+
+            // set up your download task
+            URLSession.shared.downloadTask(with: videoURL) { (location, response, error) -> Void in
+
+                // use guard to unwrap your optional url
+                guard let location = location else { return }
+
+                // create a deatination url with the server response suggested file name
+                let destinationURL = documentsDirectoryURL.appendingPathComponent(response?.suggestedFilename ?? videoURL.lastPathComponent)
+
+                do {
+                    if FileManager.default.fileExists(atPath: destinationURL.path)  {
+                        try FileManager.default.removeItem(at: destinationURL)
+                    }
+
+                    try FileManager.default.moveItem(at: location, to: destinationURL)
+
+                    PHPhotoLibrary.requestAuthorization({ (authorizationStatus: PHAuthorizationStatus) -> Void in
+
+                        // check if user authorized access photos for your app
+                        if authorizationStatus == .authorized {
+                            PHPhotoLibrary.shared().performChanges({
+                                PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: destinationURL)}) { completed, error in
+                                    if completed {
+                                        print("Video asset created")
+                                    } else {
+                                        print(error)
+                                    }
+                            }
+                        }
+                    })
+
+                } catch { print(error) }
+
+                DispatchQueue.main.async() {
+                    self.setVideoLoadingIndicatorVisible(visible: false, atPageIndex: index)
+                }
+            }.resume()
+        } else {
+            print("File already exists at destination url")
+        }
+    }
+
     func playVideo(videoURL: URL, atPhotoIndex index: Int) {
         // Setup player
         var headers: [String: String] = [:]
@@ -1818,6 +1867,18 @@ func floorcgf(x: CGFloat) -> CGFloat {
     internal func defaultActionForMedia(atIndex index: Int) {
         // Only react when image has loaded
         if let photo = mediaAtIndex(index: index) {
+            if photo.isVideo {
+                self.setVideoLoadingIndicatorVisible(visible: true, atPageIndex: index)
+                photo.getVideoURL() { url in
+                    if let u = url {
+                        self.downloadVideoLinkAndCreateAsset(u, index: index)
+                    }
+                }
+
+                setControlsHidden(hidden: false, animated: true, permanent: true)
+                return
+            }
+
             if numberOfMedias > 0 && photo.underlyingImage != nil {
                 // Show activity view controller
                 var items: [Any] = [Any]()

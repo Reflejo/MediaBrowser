@@ -1533,6 +1533,7 @@ func floorcgf(x: CGFloat) -> CGFloat {
                     animations: changes,
                     completion: completion)
             }
+            delegate?.didDisplayGrid(in: self, show: true)
         }
     }
     
@@ -1586,6 +1587,8 @@ func floorcgf(x: CGFloat) -> CGFloat {
                     animations: changes,
                     completion: completion)
             }
+
+            delegate?.didDisplayGrid(in: self, show: false)
         }
     }
     

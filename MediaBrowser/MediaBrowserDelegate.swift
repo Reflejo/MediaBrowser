@@ -104,6 +104,8 @@ public protocol MediaBrowserDelegate: class {
      Optional protocol for access token
      */
     func accessToken(for url: URL?) -> String?
+
+    func didDisplayGrid(in mediaBrowser: MediaBrowser, show: Bool)
 }
 
 public extension MediaBrowserDelegate {
@@ -128,4 +130,6 @@ public extension MediaBrowserDelegate {
     func gridCellSize() -> CGSize { return CGSize(width: 128, height: 128) }
 
     func accessToken(for url: URL?) -> String? { return nil }
+
+    func didDisplayGrid(in mediaBrowser: MediaBrowser, show: Bool) {}
 }

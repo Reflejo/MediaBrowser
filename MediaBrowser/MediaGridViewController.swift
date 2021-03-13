@@ -29,7 +29,7 @@ class MediaGridViewController: UICollectionViewController, UICollectionViewDeleg
         if let cv = collectionView {
             cv.register(MediaGridCell.self, forCellWithReuseIdentifier: "MediaGridCell")
             cv.alwaysBounceVertical = true
-            cv.backgroundColor = UIColor.black
+            cv.backgroundColor = UIColor.black.withAlphaComponent(0.9)
         }
     }
     

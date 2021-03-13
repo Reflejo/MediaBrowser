@@ -188,7 +188,7 @@ class MediaGridCell: UICollectionViewCell {
                     hideLoadingIndicator()
                 }
             } else {
-                showImageFailure()
+                //showImageFailure()
             }
         }
         
@@ -314,7 +314,7 @@ class MediaGridCell: UICollectionViewCell {
                 displayImage()
             } else {
                 // Failed to load
-                showImageFailure()
+                //showImageFailure()
             }
             
             hideLoadingIndicator()
